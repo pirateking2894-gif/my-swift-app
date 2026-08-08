@@ -1,0 +1,40 @@
+name: Build HabitChecker IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate Xcode Project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build Unsigned App
+        run: |
+          xcodebuild clean build \
+            -project HabitChecker.xcodeproj \
+            -scheme HabitChecker \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGN_IDENTITY=“” \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CONFIGURATION_BUILD_DIR=build
+
+      - name: Package into .ipa
+        run: |
+          mkdir -p Payload
+          mv build/*.app Payload/
+          zip -r HabitChecker.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: HabitChecker-IPA
+          path: HabitChecker.ipa
