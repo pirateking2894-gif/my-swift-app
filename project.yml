@@ -7,7 +7,7 @@ targets:
     platform: iOS
     deploymentTarget: “16.0”
     sources:
-      - “habit checker.swift”
+      - “HabitChecker.swift”
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
